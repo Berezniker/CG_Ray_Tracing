@@ -1,5 +1,5 @@
 # Ray tracing
-![Image](https://github.com/Berezniker/CG_Ray_Tracing/blob/master/raw/out/out_1_scene.jpg)
+![Image](https://github.com/Berezniker/CG_Ray_Tracing/blob/master/out/out_1_scene.jpg)
 
 ### Load:
 ```sh
