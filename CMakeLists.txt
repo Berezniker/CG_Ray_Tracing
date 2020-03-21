@@ -5,4 +5,4 @@ include_directories(lib/stb)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -fopenmp")
 
-add_executable(rt main.cpp objects.h vector.h image.h mesh.h)
+add_executable(rt main.cpp vector.h image.h objects.h mesh.h tracer.h)

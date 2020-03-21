@@ -2,6 +2,7 @@
 #define RAY_TRACING_IMAGE_H
 
 #include <iostream>  // std::cerr, std::endl, std::max(), std::min()
+#include <fstream>   // std::ofstream
 #include <vector>    // std::vector
 #include <string>    // std::string
 #include <cstdlib>   // exit()
@@ -24,7 +25,6 @@ float3 hex_to_rgb(uint32_t hexValue) {
     return float3((float)((hexValue >> 16) & 0xFF) / 255.0f,
                   (float)((hexValue >>  8) & 0xFF) / 255.0f,
                   (float)( hexValue        & 0xFF) / 255.0f);
-
 }
 
 
@@ -32,7 +32,7 @@ void load_image(const char *imagePath, std::vector<float3> &image, int &width, i
     int nChannels = -1;
     unsigned char *STBimage = stbi_load(imagePath, &width, &height, &nChannels, 0);
     if (!STBimage || nChannels != 3) {
-        std::cerr << "[!] Error: can not load the image: \"" << imagePath  << "\"" << std::endl;
+        std::cerr << "[Error]: can not load the image: \"" << imagePath  << "\"" << std::endl;
         exit(-1);
     }
     image = std::vector<float3>(width * height);
@@ -76,18 +76,33 @@ float3 get_cubemap_color(CUBEMAP_POSITION pos, float u, float v) {
 }
 
 
-inline float clip(float x, float a_min=0.0f, float a_max=1.0f)
-    { return std::max(a_min, std::min(x, a_max)); }
+inline float clip(float x) { return std::max(0.0f, std::min(x, 1.0f)); }
 
 
-void save_image(const std::vector<float3> &image, uint width, uint height, const char *outFile) {
-    std::vector<unsigned char> STBimage(width * height * 3);
-    for (uint i = 0; i < height * width; ++i) {
-        for (uint j = 0; j < 3; ++j) {
-            STBimage[i * 3 + j] = (unsigned char)(255.0f * clip(image[i][j]));
+void save_image(const std::vector<float3> &image, uint width, uint height, const std::string &outFile) {
+    if (outFile.find("jpg") != std::string::npos) {
+        std::vector<unsigned char> STBimage(width * height * 3);
+        for (uint i = 0; i < height * width; ++i) {
+            for (uint j = 0; j < 3; ++j) {
+                STBimage[i * 3 + j] = (unsigned char)(255.0f * clip(image[i][j]));
+            }
         }
+        stbi_write_jpg(outFile.c_str(), width, height, 3, STBimage.data(), 100);
     }
-    stbi_write_jpg(outFile, width, height, 3, STBimage.data(), 100);
+    else if (outFile.find("ppm") != std::string::npos) {
+        std::ofstream ofs;
+        ofs.open(outFile.c_str());
+        ofs << "P6\n" << width << " " << height << "\n255\n";
+        for (uint i = 0; i < height * width; ++i) {
+            for (uint j = 0; j < 3; ++j) {
+                ofs << (unsigned char)(255.0f * clip(image[i][j]));
+            }
+        }
+        ofs.close();
+    } else {
+        std::cerr << "[Error]: Can't save the image with the specified extension:"
+                  << "\"" << outFile << "\"" << std::endl;
+    }
 }
 
 
