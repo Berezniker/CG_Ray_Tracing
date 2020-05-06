@@ -173,7 +173,7 @@ float3 transform(float x, float y) {
 void render(const std::vector<Object *> &objects, const std::vector<Light> &lights) {
     std::vector<float3> image(config.width * config.height);
 
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for (uint y = 0; y < config.height; ++y) {
         for (uint x = 0; x < config.width; ++x) {
             image[y * config.width + x] = cast_ray(Ray(config.cameraOrigin, transform(x, y)), objects, lights);
@@ -186,7 +186,6 @@ void render(const std::vector<Object *> &objects, const std::vector<Light> &ligh
                         cast_ray(Ray(config.cameraOrigin, transform(x, (float)y - bias)), objects, lights);
                 image[y * config.width + x] /= 5.0f;
             }
-
         }
     }
     if (config.toneMapping) {

@@ -54,16 +54,19 @@ struct float3 {
     { return float3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
 
     float3 rotX(float angle) const { // Y -> Z
+        if (angle == 0) return *this;
         angle *= M_PI / 180.0f;
         float c = std::cos(angle), s = std::sin(angle);
         return float3(x, y * c - z * s, y * s + z * c);
     }
     float3 rotY(float angle) const { // Z -> X
+        if (angle == 0) return *this;
         angle *= M_PI / 180.0f;
         float c = std::cos(angle), s = std::sin(angle);
         return float3(x * c + z * s, y, - x * s + z * c);
     }
     float3 rotZ(float angle) const { // X -> Y
+        if (angle == 0) return *this;
         angle *= M_PI / 180.0f;
         float c = std::cos(angle), s = std::sin(angle);
         return float3(x * c - y * s, x * s + y * c, z);

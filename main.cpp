@@ -2,9 +2,8 @@
 #include <iostream>       // std::cout, std::cerr, std::endl
 #include <cstdlib>        // atoi()
 #include <vector>         // std::vector
-#include <string>         // std::string=
-#include <ctime>          // clock(), CLOCKS_PER_SEC
-#include <omp.h>          // omp_set_num_threads()
+#include <string>         // std::string
+#include <omp.h>          // omp_set_num_threads(), omp_get_wtime()
 #include "objects.h"
 #include "vector.h"
 #include "tracer.h"
@@ -16,8 +15,8 @@
 void scene_1() {
     std::cout << "scene 1" << std::endl;
     // environment setting
-    config.width = 1024;
-    config.height = 720;
+    config.width = 1280;
+    config.height = 640;
     load_background_image("../env/planet/stars_milky_way.jpg");
     config.isBackgroundMap = true;
     config.antiAliasing    = true;
@@ -119,18 +118,18 @@ void scene_3() {
     // environment setting
     config.width  = 512;
     config.height = 512;
-    config.backgroundColor = hex_to_rgb(0xFFA6DC);
-//    config.backgroundColor = float3(1.0f, 1.0f, 1.0f);
+    config.backgroundColor = hex_to_rgb(0x3C9AFF);
     if (config.outFile.empty()) config.outFile = "../out/out_3_scene.jpg";
-//    if (config.outFile.empty()) config.outFile = "../obj/view/bun_small.jpg";
 
     std::vector<Object *> objects;
     std::vector<Light>    lights;
 
     Material normal(NORMAL, float3(), 0.0f, {});
 
-    lights.emplace_back(float3(0.0f, 0.0f, 10.0f), 1.0f);
-    objects.push_back(new Mesh(normal, "../obj/bun_small.obj", 3, float3(0, 0, -5)));
+    objects.push_back(new Mesh(normal, "../obj/deer.obj", 2.0f, float3(0.8f, 0.1f, -5.0f),
+                               float3(0.0f, -25.0f, 0.0f)));
+    objects.push_back(new Mesh(normal, "../obj/deer2.obj", 2.0f, float3(-0.2f, 0.1f, -5.0f),
+                               float3(0.0f, -110.0f, 0.0f)));
 
     render(objects, lights);
 }
@@ -192,12 +191,12 @@ void parsing_parameters(int argc, char **argv, int &nScene,
 
 int main(int argc, char **argv) {
     std::unordered_map<std::string, std::string> cmdLineParams;
-    int nScene = 4;
+    int nScene = 1;
 
     parsing_parameters(argc, argv, nScene, cmdLineParams);
 
     std::cout << "__Run__" << std::endl;
-    clock_t start_time = clock();
+    double start_time = omp_get_wtime();
     switch (nScene) {
         case 1: scene_1(); break;
         case 2: scene_2(); break;
@@ -206,6 +205,6 @@ int main(int argc, char **argv) {
         default: std::cerr << "[Warning]: Invalid <scene> value: " << nScene << std::endl
                            << "           Please specify from 1 to 4" << std::endl;
     }
-    std::cout << "End, time: " << (float)(clock() - start_time) / CLOCKS_PER_SEC << " sec" << std::endl;
+    std::cout << "End, time: " << omp_get_wtime() - start_time << " sec" << std::endl;
     return 0;
 }

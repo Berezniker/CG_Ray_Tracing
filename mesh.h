@@ -15,7 +15,8 @@ struct Mesh : Object {
     std::vector<Triangle> triangles;
     Sphere boundingSphere;
     
-    Mesh(Material m, const std::string &path, float size, const float3 &position) :
+    Mesh(Material m, const std::string &path, float size, const float3 &position,
+        const float3 &rotate = float3(0.0f, 0.0f, 0.0f)) :
             Object(std::move(m)), boundingSphere(m, position, size) {
         std::vector<float3> vertices, faces;
         obj_parser(path, vertices, faces);
@@ -33,6 +34,7 @@ struct Mesh : Object {
 
         float scale = size / (maxDist - minDist).max();
         for (auto &vertex : vertices) {
+            vertex = vertex.rotX(rotate.x).rotY(rotate.y).rotZ(rotate.z);
             vertex = (vertex - center) * scale + position;
         }
 

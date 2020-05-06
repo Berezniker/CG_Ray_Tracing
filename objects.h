@@ -312,11 +312,11 @@ struct Hyperboloid : Object {
 };
 
 struct Fractal: Object {
-    const float3 center;
-    const float radius;
-    const int   numSteps     = 64;
-    const float minHitDist   = 1e-3;
-    const float maxTraceDist = 100.0f;
+    const  float3 center;
+    const  float  radius;
+    static float  minHitDist;
+    static float  maxTraceDist;
+    static int    numSteps;
 
     Fractal(Material m, const float3 &center, float radius) :
         Object(std::move(m)), center(center), radius(radius) {}
@@ -352,6 +352,10 @@ struct Fractal: Object {
         return float3(gradX, gradY, gradZ).normalize();
     }
 };
+
+int   Fractal::numSteps     = 64;
+float Fractal::minHitDist   = 1e-3;
+float Fractal::maxTraceDist = 100.0f;
 
 
 #endif // RAY_TRACING_OBJECTS_H
